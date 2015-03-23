@@ -8,6 +8,7 @@ package com.emr.utilities;
 import com.almworks.sqlite4java.SQLite;
 import com.almworks.sqlite4java.SQLiteConnection;
 import com.almworks.sqlite4java.SQLiteStatement;
+import java.sql.Statement;
 import com.opencsv.CSVReader;
 
 import java.io.File;
@@ -163,9 +164,24 @@ public class CSVLoader {
                         if(tableName.equals("person")){
                             reader = con.prepareStatement("select identifier_type_id from identifier_type where identifier_type_name='UUID'");
                             rs = reader.executeQuery();
-                            while(rs.next()){
-                                identifier_type_id=rs.getInt("identifier_type_id");
+                            if(!rs.isBeforeFirst()){
+                            	//no uuid row
+                            	//insert it
+                            	Integer numero=0;
+                            	Statement stmt = con.createStatement();
+                                numero = stmt.executeUpdate("insert into identifier_type(identifier_type_name) values('UUID')", Statement.RETURN_GENERATED_KEYS);
+                                ResultSet rs2 = stmt.getGeneratedKeys();
+                                if (rs2.next()){
+                                	identifier_type_id=rs2.getInt(1);
+                                }
+                                rs2.close();
+                                stmt.close();
+                            }else{
+                            	while(rs.next()){
+                                    identifier_type_id=rs.getInt("identifier_type_id");
+                                }
                             }
+                            
                         }
 			for (String string : nextLine) {
                             //if current index is in the list of columns to be mapped, we apply that mapping
