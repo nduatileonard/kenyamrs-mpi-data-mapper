@@ -113,7 +113,8 @@ public class CSVLoader {
             query = query.replaceFirst(KEYS_REGEX, StringUtils.join(destinationColumns, ","));
             query = query.replaceFirst(VALUES_REGEX, questionmarks);
             
-            System.out.println("Query: " + query);
+            String log_query=query.substring(0, query.indexOf("VALUES("));
+            
             String[] nextLine;
             Connection con = null;
             PreparedStatement ps = null;
@@ -207,7 +208,7 @@ public class CSVLoader {
                             	//insert it
                             	Integer numero=0;
                             	Statement stmt = con.createStatement();
-                                numero = stmt.executeUpdate("insert into identifier_type(identifier_type_name) values('UUID')", Statement.RETURN_GENERATED_KEYS);
+                                numero = stmt.executeUpdate("insert into identifier_type(identifier_type_id,identifier_type_name) values(50,'UUID')", Statement.RETURN_GENERATED_KEYS);
                                 ResultSet rs2 = stmt.getGeneratedKeys();
                                 if (rs2.next()){
                                 	identifier_type_id=rs2.getInt(1);
@@ -221,8 +222,10 @@ public class CSVLoader {
                             }
                             
                         }
+                        int counter=1;
+                        String temp_log=log_query + "VALUES("; //string to be logged
+                        
 			for (String string : nextLine) {
-                            
                             //if current index is in the list of columns to be mapped, we apply that mapping
                             for(Object o: mapColumnsIndices){
                                 int i=(int)o;
@@ -245,40 +248,27 @@ public class CSVLoader {
                                 
                             }
                             //check if string is a date
-                            if(string.matches("\\d{2}-[a-zA-Z]{3}-\\d{4}")){
+                            if(string.matches("\\d{2}-[a-zA-Z]{3}-\\d{4} \\d{2}:\\d{2}:\\d{2}") || string.matches("\\d{2}-[a-zA-Z]{3}-\\d{4}")){
                                 java.sql.Date dt=formatDate(string);
-                                
+                                temp_log=temp_log + "'" + dt.toString() + "'";
                                 ps.setDate(index++, dt);
                             }else{
                                 if("".equals(string)){
+                                    temp_log=temp_log + "''";
                                     ps.setNull(index++, Types.NULL);
                                 }else{
-                                    /*if(index==(firstname_index + 1)){
-                                        System.out.println("trim happening for firstname at index: " + index);
-                                        string="LEFT(RTRIM('" + string + "'),25)";
-                                    }
-                                    if(index==(middlename_index + 1)){
-                                        System.out.println("trim happening for middlename at index: " + index);
-                                        string="LEFT(RTRIM('" + string + "'),25)";
-                                    }
-                                    if(index==(lastname_index + 1)){
-                                        System.out.println("trim happening for lastname_index at index: " + index);
-                                        string="LEFT(RTRIM('" + string + "'),25)";
-                                    }
-                                    if(index==(clanname_index + 1)){
-                                        System.out.println("trim happening for clanname_index at index: " + index);
-                                        string="LEFT(RTRIM('" + string + "'),25)";
-                                    }
-                                    if(index==(othername_index + 1)){
-                                        System.out.println("trim happening for othername_index at index: " + index);
-                                        string="LEFT(RTRIM('" + string + "'),25)";
-                                    }*/
-                                    
+                                    temp_log=temp_log + "'" + string + "'";
                                     ps.setString(index++, string);
                                 }
                                 
                             }
-                            
+                            if(counter<headerRow.length){
+                                temp_log=temp_log + ",";
+                            }else{
+                                temp_log=temp_log + ");";
+                                System.out.println(temp_log);
+                            }
+                            counter++;
 			}
                         if(tableName.equals("person")){
                             if(!"".equals(uuid)  && person_id!=-1 ){

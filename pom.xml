@@ -11,7 +11,7 @@
     <sqlite4java.version>1.0.392</sqlite4java.version>
   </properties>
   <build>
-    <sourceDirectory>src</sourceDirectory>
+    <sourceDirectory>src/main/java</sourceDirectory>
     <finalName>KenyaEMR_MPIDataMover</finalName>
     <plugins>
       <plugin>
@@ -146,6 +146,7 @@
 	            </goals>
 	            <configuration>
 	                <tasks>
+	                    <echo>Copying resources..</echo>
 	                    <copy file="config/emr_database.properties" tofile="${project.build.directory}/config/emr_database.properties"/>
 	                    <copy file="config/mpi_database.properties" tofile="${project.build.directory}/config/mpi_database.properties"/>
 	                    <copy file="sqlite/db" tofile="${project.build.directory}/sqlite/db"/>
