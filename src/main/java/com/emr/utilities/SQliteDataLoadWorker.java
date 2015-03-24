@@ -26,6 +26,7 @@ public class SQliteDataLoadWorker extends SwingWorker<DefaultTableModel, TableMo
     private final String stmt;
     
     public SQliteDataLoadWorker(JTable table,String stmnt){
+        SQLite.setLibraryPath("lib");
     	this.table = table;
         this.stmt=stmnt;
     }

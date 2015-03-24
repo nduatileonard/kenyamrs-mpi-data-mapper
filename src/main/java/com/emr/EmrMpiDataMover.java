@@ -12,6 +12,8 @@ import com.emr.schemas.SavedProcessesDataMover;
 import com.emr.schemas.SchemerMapper;
 import com.emr.utilities.DatabaseManager;
 import com.emr.utilities.FileManager;
+import com.emr.utilities.LoggingOutputStream;
+import com.emr.utilities.StdOutErrLevel;
 import java.sql.Connection;
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
@@ -19,6 +21,13 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import java.io.PrintStream;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 
 /**
  * Main class of the project. A JDesktopPane that should contain all the 
@@ -328,6 +337,32 @@ public class EmrMpiDataMover extends JFrame {
         }
         //</editor-fold>
 
+        // initialize logging to go to rolling log file
+        LogManager logManager = LogManager.getLogManager();
+        logManager.reset();
+        try{
+            // log file max size 10K, 3 rolling files, append-on-open
+            Handler fileHandler = new FileHandler("log", 10000, 3, true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            Logger.getLogger("").addHandler(fileHandler); 
+            // preserve old stdout/stderr streams in case they might be useful
+            PrintStream stdout = System.out;
+            PrintStream stderr = System.err;
+            // now rebind stdout/stderr to logger
+            Logger logger;
+            LoggingOutputStream los;
+
+            logger = Logger.getLogger("stdout");
+            los = new LoggingOutputStream(logger, StdOutErrLevel.STDOUT);
+            System.setOut(new PrintStream(los, true));
+
+            logger = Logger.getLogger("stderr");
+            los= new LoggingOutputStream(logger, StdOutErrLevel.STDERR);
+            System.setErr(new PrintStream(los, true));
+        }catch(Exception e){
+            System.out.println("Error opening file: " + e.getMessage());
+        }
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

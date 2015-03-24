@@ -425,6 +425,7 @@ public class EditMappingsForm extends javax.swing.JInternalFrame {
                         System.out.println("Destination table: " + destinationTable);
             		selectQuery=selectQuery + " group by " +  destinationTable + ".person_id";
             	}
+                System.out.println("Select Query: " + selectQuery);
                 ps = emrConn.prepareStatement(selectQuery );
                 rs = ps.executeQuery();
                 publish("Writing data from Source to the CSV file...");

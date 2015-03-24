@@ -152,7 +152,26 @@ public class CSVLoader {
                         if(headerRow[i].equals("uuid")){
                             uuid_column_index=i;
                         }
-                        
+                        /*if(headerRow[i].equals("first_name")){
+                            System.out.println("Found firstname index: " + i);
+                            firstname_index=i;
+                        }
+                        if(headerRow[i].equals("middle_name")){
+                            System.out.println("Found firstname index: " + i);
+                            middlename_index=i;
+                        }
+                        if(headerRow[i].equals("last_name")){
+                            System.out.println("Found firstname index: " + i);
+                            lastname_index=i;
+                        }
+                        if(headerRow[i].equals("clan_name")){
+                            System.out.println("Found firstname index: " + i);
+                            clanname_index=i;
+                        }
+                        if(headerRow[i].equals("other_name")){
+                            System.out.println("Found firstname index: " + i);
+                            othername_index=i;
+                        }*/
                     }
                 }
                 
@@ -234,7 +253,26 @@ public class CSVLoader {
                                 if("".equals(string)){
                                     ps.setNull(index++, Types.NULL);
                                 }else{
-                                    
+                                    /*if(index==(firstname_index + 1)){
+                                        System.out.println("trim happening for firstname at index: " + index);
+                                        string="LEFT(RTRIM('" + string + "'),25)";
+                                    }
+                                    if(index==(middlename_index + 1)){
+                                        System.out.println("trim happening for middlename at index: " + index);
+                                        string="LEFT(RTRIM('" + string + "'),25)";
+                                    }
+                                    if(index==(lastname_index + 1)){
+                                        System.out.println("trim happening for lastname_index at index: " + index);
+                                        string="LEFT(RTRIM('" + string + "'),25)";
+                                    }
+                                    if(index==(clanname_index + 1)){
+                                        System.out.println("trim happening for clanname_index at index: " + index);
+                                        string="LEFT(RTRIM('" + string + "'),25)";
+                                    }
+                                    if(index==(othername_index + 1)){
+                                        System.out.println("trim happening for othername_index at index: " + index);
+                                        string="LEFT(RTRIM('" + string + "'),25)";
+                                    }*/
                                     
                                     ps.setString(index++, string);
                                 }

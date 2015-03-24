@@ -5,6 +5,7 @@
  */
 package com.emr.utilities;
 
+import com.almworks.sqlite4java.SQLite;
 import com.almworks.sqlite4java.SQLiteConnection;
 import com.almworks.sqlite4java.SQLiteStatement;
 import com.emr.schemas.CustomTableModel;
@@ -23,6 +24,7 @@ public class SQLiteGetProcesses extends SwingWorker<CustomTableModel, TableModel
     
     @Override
     protected CustomTableModel doInBackground() throws Exception {
+        SQLite.setLibraryPath("lib");
         SQLiteConnection db=null;
         SQLiteStatement st=null;
         Vector data = new Vector();

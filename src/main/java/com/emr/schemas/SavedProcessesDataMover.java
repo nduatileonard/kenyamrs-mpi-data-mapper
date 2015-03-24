@@ -192,7 +192,7 @@ public class SavedProcessesDataMover extends javax.swing.JInternalFrame {
      */
     private class DBUpdater extends SwingWorker<Boolean, String>{
         private final String destinationTable;
-        private final String selectQuery;
+        private String selectQuery;
         private final String truncateFirst;
         private final String destinationColumns;
         private final String columnsToBeMapped;
@@ -225,6 +225,7 @@ public class SavedProcessesDataMover extends javax.swing.JInternalFrame {
             
             try {
                 //get source data and dump it to a csv file
+                
                 ps = emrConn.prepareStatement(selectQuery);
                 rs = ps.executeQuery();
                 publish("Writing data from Source to the CSV file...");
