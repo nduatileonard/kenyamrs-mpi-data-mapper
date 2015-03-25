@@ -46,9 +46,9 @@
                   <Component id="dbProgressBar" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane2" min="-2" pref="64" max="-2" attributes="0"/>
+              <Component id="jScrollPane2" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="261" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="233" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
