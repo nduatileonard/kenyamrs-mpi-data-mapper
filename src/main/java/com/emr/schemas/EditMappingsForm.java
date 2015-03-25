@@ -513,10 +513,10 @@ public class EditMappingsForm extends javax.swing.JInternalFrame {
                     }finally{
                         buffer = null;
                     }
-                    
+                    String dbName=getDatabaseName(emrConn);
                     dbProgressBar.setIndeterminate(true);
                     lblUpdateText.setText("Saving Process for future reference");
-                    new SqliteAddProcess(processName, description, selectQuery, destinationTable,radioDeleteRows.isSelected(),destinationColumns,columnsToBeMappedString, dbProgressBar, lblUpdateText).execute();
+                    new SqliteAddProcess(processName, description, selectQuery, destinationTable,radioDeleteRows.isSelected(),destinationColumns,columnsToBeMappedString, dbProgressBar, lblUpdateText,dbName).execute();
                 }
                 //now show the report window
                 JDesktopPane desktopPane = getDesktopPane();

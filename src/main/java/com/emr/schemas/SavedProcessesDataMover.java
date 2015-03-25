@@ -95,7 +95,7 @@ public class SavedProcessesDataMover extends javax.swing.JInternalFrame {
                                     tblProcesses.getColumnModel().getColumn(6).setMinWidth(0);
                                     tblProcesses.getColumnModel().getColumn(6).setMaxWidth(0);
                                     
-                                    ButtonColumn buttonColumn = new ButtonColumn(tblProcesses, processDelete, 7,"Delete");
+                                    ButtonColumn buttonColumn = new ButtonColumn(tblProcesses, processDelete, 8,"Delete");
                                 }catch (final CancellationException ex) {
                                     Logger.getLogger(SavedProcessesDataMover.class.getName()).log(Level.SEVERE, null, ex);
                                 } catch (InterruptedException ex) {
@@ -125,9 +125,27 @@ public class SavedProcessesDataMover extends javax.swing.JInternalFrame {
                     String truncateFirst=(String)target.getModel().getValueAt(rowIndex, 4);
                     String destinationColumns=(String)target.getModel().getValueAt(rowIndex, 5);
                     String columnsToBeMapped=(String)target.getModel().getValueAt(rowIndex, 6);
+                    String dbName=(String)target.getModel().getValueAt(rowIndex, 7);
+                    FileManager fileManager;
+                    //Create KenyaEMR DB connection
+                    fileManager=new FileManager();
+                    String[] settings=fileManager.getConnectionSettings("emr_database.properties","emr");
+                    String qry="";
+                    if(settings!=null && settings.length>=1){
+                        DatabaseManager dbManager=new DatabaseManager(settings[0], settings[1], settings[3], settings[4], settings[5]);
+                        Connection emrConn=dbManager.getConnection();
+                        if(emrConn!=null){
+                            qry=selectQry.replaceAll(dbName, getDatabaseName(emrConn));
+                        }else{
+                            qry=selectQry;
+                        }
+                    }else{
+                        qry=selectQry; //fail safe
+                    }
+                    System.out.println("Query: " + qry);
                     lblUpdateText.setText("<html><b color='red'>Moving Data</b></html>");
                     dbProgressBar.setIndeterminate(true);
-                    new DBUpdater(selectQry, destinationTable,truncateFirst,destinationColumns,columnsToBeMapped).execute();
+                    new DBUpdater(qry, destinationTable,truncateFirst,destinationColumns,columnsToBeMapped).execute();
                 }
             }
 
@@ -152,6 +170,21 @@ public class SavedProcessesDataMover extends javax.swing.JInternalFrame {
             }
         });
         
+    }
+    /**
+     * Returns the name of a database from a Connection object
+     * @param con {@link Connection} The connection object
+     * @return {@link String} The database name
+     */
+    private String getDatabaseName(Connection con){
+        String dbName="";
+        try{
+            String url=con.getMetaData().getURL();
+            dbName=url.substring(url.lastIndexOf("/") + 1, url.length());
+        } catch (SQLException ex) {
+            Logger.getLogger(EditMappingsForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return dbName;
     }
     /**
      * Method for getting a saved connection object

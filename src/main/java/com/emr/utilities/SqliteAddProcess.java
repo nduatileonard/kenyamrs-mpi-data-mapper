@@ -27,6 +27,7 @@ public class SqliteAddProcess extends SwingWorker<Boolean, Object> {
     String description;
     Boolean truncateFirst;
     String destinationTable;
+    String dbName;
     String selectQuery;
     String [] destinationColumns;
     String destinationCols="";
@@ -45,7 +46,7 @@ public class SqliteAddProcess extends SwingWorker<Boolean, Object> {
      * @param jp The progress bar
      * @param lbl Label to be updated on completion
      */
-    public SqliteAddProcess(String name,String description,String selectQuery,String destinationTable,Boolean truncateFirst,String [] destinationColumns,String columnsToBeMappedString,JProgressBar jp,JLabel lbl){
+    public SqliteAddProcess(String name,String description,String selectQuery,String destinationTable,Boolean truncateFirst,String [] destinationColumns,String columnsToBeMappedString,JProgressBar jp,JLabel lbl,String dbName){
         this.name=name;
         this.description=description;
         this.selectQuery=selectQuery;
@@ -55,6 +56,7 @@ public class SqliteAddProcess extends SwingWorker<Boolean, Object> {
         this.columnsToBeMappedString=columnsToBeMappedString;
         this.jp=jp;
         this.lbl=lbl;
+        this.dbName=dbName;
         
         destinationCols=StringUtils.join(destinationColumns, "|");
     }
@@ -69,9 +71,10 @@ public class SqliteAddProcess extends SwingWorker<Boolean, Object> {
             }
             db=new SQLiteConnection(file);
             db.open(true);
+            
             //db.exec("drop table procedures");
-            db.exec("create table if not exists procedures(name varchar(100),description text,selectQry text,destinationTable varchar(100),truncateFirst varchar(5),destinationColumns text,columnsToBeMapped text)");
-            st=db.prepare("insert into procedures(name,description,selectQry,destinationTable,truncateFirst,destinationColumns,columnsToBeMapped) values(?,?,?,?,?,?,?)");
+            db.exec("create table if not exists procedures(name varchar(100),description text,selectQry text,destinationTable varchar(100),truncateFirst varchar(5),destinationColumns text,columnsToBeMapped text,dbName varchar(100))");
+            st=db.prepare("insert into procedures(name,description,selectQry,destinationTable,truncateFirst,destinationColumns,columnsToBeMapped,dbName) values(?,?,?,?,?,?,?,?)");
             st.bind(1, name);
             st.bind(2, description);
             st.bind(3, selectQuery);
@@ -79,6 +82,7 @@ public class SqliteAddProcess extends SwingWorker<Boolean, Object> {
             st.bind(5, truncateFirst.toString());
             st.bind(6, destinationCols);
             st.bind(7, columnsToBeMappedString);
+            st.bind(8, dbName);
             st.step();
         }catch(Exception e){
             error_msg=org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(e);

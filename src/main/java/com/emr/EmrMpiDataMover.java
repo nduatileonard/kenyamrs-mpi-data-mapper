@@ -341,8 +341,8 @@ public class EmrMpiDataMover extends JFrame {
         LogManager logManager = LogManager.getLogManager();
         logManager.reset();
         try{
-            // log file max size 10K, 3 rolling files, append-on-open
-            Handler fileHandler = new FileHandler("log", 10000, 3, true);
+            // log file max size 100K, 3 rolling files, append-on-open
+            Handler fileHandler = new FileHandler("log", 100000, 3, true);
             fileHandler.setFormatter(new SimpleFormatter());
             Logger.getLogger("").addHandler(fileHandler); 
             // preserve old stdout/stderr streams in case they might be useful

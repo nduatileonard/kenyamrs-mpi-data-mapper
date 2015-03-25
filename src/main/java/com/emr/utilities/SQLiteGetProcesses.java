@@ -27,6 +27,8 @@ public class SQLiteGetProcesses extends SwingWorker<CustomTableModel, TableModel
         SQLite.setLibraryPath("lib");
         SQLiteConnection db=null;
         SQLiteStatement st=null;
+        SQLiteStatement st2=null;
+        SQLiteStatement st3=null;
         Vector data = new Vector();
         Vector columns = new Vector();
         columns.add("Name");
@@ -36,6 +38,7 @@ public class SQLiteGetProcesses extends SwingWorker<CustomTableModel, TableModel
         columns.add("TruncateFirst");
         columns.add("DestinationColumns");
         columns.add("ColumnsToBeMapped");
+        columns.add("DB Name");
         columns.add("Delete?");
         
         try{
@@ -45,10 +48,28 @@ public class SQLiteGetProcesses extends SwingWorker<CustomTableModel, TableModel
             }
             db=new SQLiteConnection(file);
             db.open(true);
-            st = db.prepare("SELECT name,description,selectQry,destinationTable,truncateFirst,destinationColumns,columnsToBeMapped FROM procedures");
+            //due to addition of new column in procedures table, we'll use a temporary table to check if we should drop the table first
+            db.exec("create table if not exists proc_check(hasColumn char(1))");
+            st2=db.prepare("select hasColumn from proc_check");
+            boolean empty_procs=true;
+            while(st2.step()){
+                //has column is set
+                empty_procs=false;
+                
+            }
+            if(empty_procs==true){
+                st3=db.prepare("insert into proc_check(hasColumn) values(?)");
+                st3.bind(1, "1");
+                st3.step();
+                db.exec("drop table procedures");
+                
+            }
+            
+            db.exec("create table if not exists procedures(name varchar(100),description text,selectQry text,destinationTable varchar(100),truncateFirst varchar(5),destinationColumns text,columnsToBeMapped text,dbName varchar(100))");
+            st = db.prepare("SELECT name,description,selectQry,destinationTable,truncateFirst,destinationColumns,columnsToBeMapped,dbName FROM procedures");
             Vector row;
             while (st.step()) {
-                row = new Vector(5);
+                row = new Vector(8);
                 row.add(st.columnString(0));
                 row.add(st.columnString(1));
                 row.add(st.columnString(2));
@@ -56,6 +77,7 @@ public class SQLiteGetProcesses extends SwingWorker<CustomTableModel, TableModel
                 row.add(st.columnString(4));
                 row.add(st.columnString(5));
                 row.add(st.columnString(6));
+                row.add(st.columnString(7));
                 row.add("");
                 data.add(row);
             }
